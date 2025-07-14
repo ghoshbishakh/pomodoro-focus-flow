@@ -8,9 +8,11 @@ import { SettingsDialog, type PomodoroSettings } from './SettingsDialog';
 import { PomodoroTimer } from './PomodoroTimer';
 import { TaskList } from './TaskList';
 import { YouTubePlayer } from './YouTubePlayer';
+import type { YouTubePlayerRef } from './YouTubePlayer';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
-import { Play } from 'lucide-react';
+import { Play, Eye, EyeOff } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const MIN_PANEL_WIDTH = 350;
 const MAX_PANEL_WIDTH = 800;
@@ -23,17 +25,48 @@ export default function FocusFlowApp() {
   const [panelWidth, setPanelWidth] = useLocalStorage<number>('panelWidth', 480);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [inputValue, setInputValue] = useState(youtubeUrl);
+  
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const [isTimerActive, setIsTimerActive] = useState(false);
+  const hideHeaderTimeout = useRef<NodeJS.Timeout | null>(null);
 
+  const playerRef = useRef<YouTubePlayerRef>(null);
+
+  const handleTimerStart = () => {
+    playerRef.current?.playVideo();
+  };
+  
+  const handleToggleHeader = () => {
+     if (hideHeaderTimeout.current) {
+      clearTimeout(hideHeaderTimeout.current);
+      hideHeaderTimeout.current = null;
+    }
+    setIsHeaderVisible(prev => !prev);
+  }
+
+  useEffect(() => {
+    if (isTimerActive) {
+       hideHeaderTimeout.current = setTimeout(() => setIsHeaderVisible(false), 2000);
+    } else {
+      if (hideHeaderTimeout.current) {
+        clearTimeout(hideHeaderTimeout.current);
+      }
+      setIsHeaderVisible(true);
+    }
+    return () => {
+      if (hideHeaderTimeout.current) {
+        clearTimeout(hideHeaderTimeout.current);
+      }
+    };
+  }, [isTimerActive]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setYoutubeUrl(inputValue);
   };
 
-
   const isResizing = useRef(false);
 
-  // Initialize AudioContext on user interaction
   useEffect(() => {
     const initAudio = () => {
         if (!audioContext) {
@@ -75,7 +108,6 @@ export default function FocusFlowApp() {
     document.removeEventListener('mouseup', handleMouseUp);
   }, [handleMouseMove]);
   
-  // Ensure active task exists
   useEffect(() => {
     if(activeTaskId && !tasks.find(t => t.id === activeTaskId)) {
       setActiveTaskId(null);
@@ -112,8 +144,8 @@ export default function FocusFlowApp() {
     gainNode.connect(audioContext.destination);
     
     oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // A4
-    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime); // Subtle volume
+    oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
     
     oscillator.start(audioContext.currentTime);
     oscillator.stop(audioContext.currentTime + 0.5);
@@ -132,7 +164,10 @@ export default function FocusFlowApp() {
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden">
-      <header className="flex items-center justify-between p-2 px-4 border-b shrink-0">
+      <header className={cn(
+        "flex items-center justify-between p-2 px-4 border-b shrink-0 transition-transform duration-300",
+        !isHeaderVisible && "-translate-y-full absolute top-0 w-full"
+      )}>
         <h1 className="text-xl font-bold text-primary">FocusFlow</h1>
         <form onSubmit={handleSubmit} className="flex gap-2 w-full max-w-lg mx-auto">
           <Input
@@ -145,9 +180,22 @@ export default function FocusFlowApp() {
           </Button>
         </form>
         <div className="flex items-center gap-2">
+          <SettingsDialog settings={settings} onSave={setSettings} />
           <ThemeToggle />
         </div>
       </header>
+       {isTimerActive && (
+        <div className="absolute top-2 right-4 z-50">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleToggleHeader}
+            aria-label={isHeaderVisible ? "Hide header" : "Show header"}
+          >
+            {isHeaderVisible ? <EyeOff /> : <Eye />}
+          </Button>
+        </div>
+      )}
       <main className="flex flex-grow min-h-0">
         <div 
           style={{ width: `${panelWidth}px` }} 
@@ -156,8 +204,9 @@ export default function FocusFlowApp() {
           <PomodoroTimer 
             settings={settings} 
             onSessionComplete={handleSessionComplete}
-            isTaskActive={!!activeTaskId} 
-            settingsComponent={<SettingsDialog settings={settings} onSave={setSettings} />}
+            isTaskActive={!!activeTaskId}
+            onTimerStart={handleTimerStart}
+            onTimerStateChange={setIsTimerActive}
           />
           <TaskList
             tasks={tasks}
@@ -176,7 +225,7 @@ export default function FocusFlowApp() {
         />
 
         <div className="flex-grow flex items-center justify-center p-4">
-          <YouTubePlayer initialUrl={youtubeUrl} onUrlChange={setYoutubeUrl} />
+          <YouTubePlayer ref={playerRef} initialUrl={youtubeUrl} />
         </div>
       </main>
     </div>

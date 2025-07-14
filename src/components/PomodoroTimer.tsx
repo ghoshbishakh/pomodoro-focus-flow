@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, type ReactNode } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from './ui/button';
 import { Play, Pause, RotateCcw, Coffee, BrainCircuit } from 'lucide-react';
 import { type PomodoroSettings } from './SettingsDialog';
@@ -10,15 +10,20 @@ interface PomodoroTimerProps {
   settings: PomodoroSettings;
   onSessionComplete: () => void;
   isTaskActive: boolean;
-  settingsComponent: ReactNode;
+  onTimerStart: () => void;
+  onTimerStateChange: (isActive: boolean) => void;
 }
 
 type SessionType = 'work' | 'shortBreak';
 
-export function PomodoroTimer({ settings, onSessionComplete, isTaskActive, settingsComponent }: PomodoroTimerProps) {
+export function PomodoroTimer({ settings, onSessionComplete, isTaskActive, onTimerStart, onTimerStateChange }: PomodoroTimerProps) {
   const [sessionType, setSessionType] = useState<SessionType>('work');
   const [time, setTime] = useState(settings.work * 60);
   const [isActive, setIsActive] = useState(false);
+
+  useEffect(() => {
+    onTimerStateChange(isActive);
+  }, [isActive, onTimerStateChange]);
 
   useEffect(() => {
     setIsActive(false);
@@ -42,7 +47,7 @@ export function PomodoroTimer({ settings, onSessionComplete, isTaskActive, setti
       if (sessionType === 'work') {
         onSessionComplete();
         new Notification('FocusFlow', { body: "Work session complete! Time for a break." });
-        switchSession('shortBreak', true); // auto start break
+        switchSession('shortBreak', true); 
       } else {
         new Notification('FocusFlow', { body: "Break's over! Let's get back to work." });
         switchSession('work', false);
@@ -61,6 +66,9 @@ export function PomodoroTimer({ settings, onSessionComplete, isTaskActive, setti
   }, []);
 
   const toggleTimer = () => {
+    if (!isActive) {
+      onTimerStart();
+    }
     setIsActive(!isActive);
   };
 
@@ -117,15 +125,15 @@ export function PomodoroTimer({ settings, onSessionComplete, isTaskActive, setti
           {formatTime(time)}
         </div>
         <div className="flex gap-4">
-          <Button onClick={toggleTimer} size="lg" className="w-32">
+          <Button onClick={toggleTimer} size="lg" className="w-32" disabled={!isTaskActive}>
             {isActive ? <Pause className="mr-2" /> : <Play className="mr-2" />}
             {isActive ? 'Pause' : 'Start'}
           </Button>
-          {settingsComponent}
           <Button onClick={resetTimer} variant="outline" size="icon" aria-label="Reset timer">
             <RotateCcw />
           </Button>
         </div>
+        {!isTaskActive && <p className="text-xs text-muted-foreground">Select a task to start the timer.</p>}
       </CardContent>
     </Card>
   );
