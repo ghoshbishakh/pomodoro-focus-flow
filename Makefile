@@ -1,20 +1,21 @@
-# Makefile for building a static frontend site
+# Simple Makefile for Next.js project
 
-# Define the build command
-BUILD_COMMAND = npm run build
+# Default target
+all: help
 
-# Define the output directory for static files
-DIST_DIR = dist
-
-# Default target: build the static site
-all: build
-
-# Build the project and output to the dist directory
+# Build the application
 build:
-	$(BUILD_COMMAND)
+	@echo "Building Next.js application..."
+	@npm run build
 
-# Clean up the build artifacts
-clean:
-	rm -rf $(DIST_DIR)
+# Export the application to a static site
+export:
+	@echo "Exporting to static site..."
+	@npm run build
+	@echo "Static site exported to ./out directory."
 
-.PHONY: all build clean
+# Help
+help:
+	@echo "Available targets:"
+	@echo "  build   - Build the Next.js application"
+	@echo "  export  - Export the application as a static site to the 'out' directory"
