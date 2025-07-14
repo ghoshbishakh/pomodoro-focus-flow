@@ -193,17 +193,27 @@ export default function FocusFlowApp() {
         </form>
         <div className="flex items-center gap-2">
           <ThemeToggle />
+           {isTimerActive && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleToggleHeader}
+              aria-label={isHeaderVisible ? "Hide header" : "Show header"}
+            >
+              {isHeaderVisible ? <EyeOff /> : <Eye />}
+            </Button>
+          )}
         </div>
       </header>
-       {isTimerActive && (
+       {!isHeaderVisible && (
         <div className="absolute top-2 right-4 z-50">
           <Button
             variant="ghost"
             size="icon"
             onClick={handleToggleHeader}
-            aria-label={isHeaderVisible ? "Hide header" : "Show header"}
+            aria-label="Show header"
           >
-            {isHeaderVisible ? <EyeOff /> : <Eye />}
+            <Eye />
           </Button>
         </div>
       )}
