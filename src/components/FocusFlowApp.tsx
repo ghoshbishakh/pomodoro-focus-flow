@@ -8,7 +8,6 @@ import { SettingsDialog, type PomodoroSettings } from './SettingsDialog';
 import { PomodoroTimer } from './PomodoroTimer';
 import { TaskList } from './TaskList';
 import { YouTubePlayer } from './YouTubePlayer';
-import { Separator } from './ui/separator';
 
 const MIN_PANEL_WIDTH = 350;
 const MAX_PANEL_WIDTH = 800;
@@ -122,18 +121,17 @@ export default function FocusFlowApp() {
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden">
-      <header className="flex items-center justify-between p-2 px-4 border-b shrink-0 bg-background/50 backdrop-blur-sm">
-        <h1 className="text-xl font-bold font-headline text-primary">FocusFlow</h1>
+      <header className="flex items-center justify-between p-2 px-4 border-b shrink-0">
+        <h1 className="text-xl font-bold text-primary">FocusFlow</h1>
         <div className="flex items-center gap-2">
           <SettingsDialog settings={settings} onSave={setSettings} />
           <ThemeToggle />
         </div>
       </header>
-      <main className="flex flex-grow min-h-0 relative">
-        <div className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat" style={{backgroundImage: 'radial-gradient(circle at center, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 100%)'}}></div>
+      <main className="flex flex-grow min-h-0">
         <div 
           style={{ width: `${panelWidth}px` }} 
-          className="p-2 flex flex-col overflow-y-auto bg-black/10 backdrop-blur-xl border-r border-white/10 z-10"
+          className="p-4 flex flex-col gap-4 overflow-y-auto border-r"
         >
           <PomodoroTimer 
             settings={settings} 
@@ -151,14 +149,12 @@ export default function FocusFlowApp() {
           />
         </div>
         
-        <Separator
-          orientation="vertical"
+        <div
           onMouseDown={handleMouseDown}
-          className="w-1 cursor-col-resize hover:bg-primary transition-colors z-10"
+          className="w-1.5 cursor-col-resize hover:bg-primary/20 transition-colors shrink-0"
         />
 
-        <div className="flex-grow flex items-center justify-center relative z-0">
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-black/80 pointer-events-none"></div>
+        <div className="flex-grow flex items-center justify-center p-4">
           <YouTubePlayer initialUrl={youtubeUrl} onUrlChange={setYoutubeUrl} />
         </div>
       </main>

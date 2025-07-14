@@ -55,24 +55,23 @@ export function TaskList({ tasks, onAddTask, onToggleTask, onDeleteTask, onRearr
   };
 
   return (
-    <Card className="flex-grow flex flex-col h-full mt-4 bg-transparent border-none shadow-none">
-      <CardHeader className="p-2">
+    <Card className="flex-grow flex flex-col min-h-0">
+      <CardHeader>
         <CardTitle>Tasks</CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col gap-2 flex-grow min-h-0 p-2">
+      <CardContent className="flex flex-col gap-2 flex-grow min-h-0">
         <form onSubmit={handleAddTask} className="flex gap-2">
           <Input
             value={newTaskText}
             onChange={(e) => setNewTaskText(e.target.value)}
             placeholder="Add a new task..."
-            className="bg-white/5"
           />
           <Button type="submit" size="icon" aria-label="Add task">
             <Plus />
           </Button>
         </form>
-        <ScrollArea className="flex-grow -mr-2">
-          <div className="space-y-1 pr-2">
+        <ScrollArea className="flex-grow">
+          <div className="space-y-2">
             {tasks.length === 0 && (
               <p className="text-muted-foreground text-center py-4">No tasks yet. Add one to get started!</p>
             )}
@@ -85,11 +84,11 @@ export function TaskList({ tasks, onAddTask, onToggleTask, onDeleteTask, onRearr
                 onDragEnd={handleDragEnd}
                 onDragOver={(e) => e.preventDefault()}
                 className={cn(
-                  "flex items-center gap-1 p-1 rounded-md transition-all cursor-grab active:cursor-grabbing",
-                  activeTaskId === task.id ? 'bg-primary/20' : 'hover:bg-white/10',
+                  "flex items-center gap-2 p-2 rounded-md transition-all cursor-grab active:cursor-grabbing",
+                  activeTaskId === task.id ? 'bg-primary/20' : 'hover:bg-accent',
                 )}
               >
-                <GripVertical className="h-5 w-5 text-muted-foreground/50 shrink-0"/>
+                <GripVertical className="h-5 w-5 text-muted-foreground shrink-0"/>
                 <Checkbox
                   id={`task-${task.id}`}
                   checked={task.completed}
@@ -103,13 +102,13 @@ export function TaskList({ tasks, onAddTask, onToggleTask, onDeleteTask, onRearr
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-7 w-7"
+                  className="h-8 w-8"
                   onClick={() => onSetActiveTaskId(activeTaskId === task.id ? null : task.id)}
                   aria-label={`Select task ${task.text} for tracking`}
                 >
-                  {activeTaskId === task.id ? <Zap className="text-primary" /> : <Zap className="text-muted-foreground" />}
+                  <Zap className={cn("h-4 w-4", activeTaskId === task.id ? "text-primary" : "text-muted-foreground")} />
                 </Button>
-                <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => onDeleteTask(task.id)} aria-label={`Delete task ${task.text}`}>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => onDeleteTask(task.id)} aria-label={`Delete task ${task.text}`}>
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>

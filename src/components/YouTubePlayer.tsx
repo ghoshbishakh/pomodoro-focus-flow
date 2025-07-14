@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { Play } from 'lucide-react';
+import { Card } from './ui/card';
 
 interface YouTubePlayerProps {
   initialUrl: string;
@@ -46,10 +47,10 @@ export function YouTubePlayer({ initialUrl, onUrlChange }: YouTubePlayerProps) {
     const { videoId, playlistId } = extractId(initialUrl);
 
     if (playlistId) {
-      return `https://www.youtube.com/embed/videoseries?list=${playlistId}&autoplay=1&loop=1&controls=0&showinfo=0&rel=0`;
+      return `https://www.youtube.com/embed/videoseries?list=${playlistId}&autoplay=1&loop=1&controls=1&showinfo=0&rel=0`;
     }
     if (videoId) {
-      return `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0`;
+      return `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&controls=1&showinfo=0&rel=0`;
     }
     return '';
   }, [initialUrl]);
@@ -60,23 +61,22 @@ export function YouTubePlayer({ initialUrl, onUrlChange }: YouTubePlayerProps) {
   };
 
   return (
-    <div className="h-full w-full flex flex-col gap-2 p-2 relative">
-        <form onSubmit={handleSubmit} className="flex gap-2 w-full max-w-lg mx-auto z-10">
+    <div className="h-full w-full flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="flex gap-2 w-full max-w-lg mx-auto">
           <Input
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="Enter YouTube video or playlist URL"
-            className="bg-black/30 border-white/20 backdrop-blur-sm"
           />
-          <Button type="submit" className="bg-black/30 border-white/20 backdrop-blur-sm hover:bg-white/20">
+          <Button type="submit">
             <Play className="mr-2 h-4 w-4" /> Load
           </Button>
         </form>
-        <div className="absolute inset-0 w-full h-full">
+        <Card className="w-full flex-grow aspect-video">
           {embedUrl ? (
             <iframe
               key={embedUrl}
-              className="w-full h-full"
+              className="w-full h-full rounded-lg"
               src={embedUrl}
               title="YouTube video player"
               frameBorder="0"
@@ -84,11 +84,11 @@ export function YouTubePlayer({ initialUrl, onUrlChange }: YouTubePlayerProps) {
               allowFullScreen
             ></iframe>
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-muted-foreground bg-black/80 rounded-lg">
+            <div className="w-full h-full flex items-center justify-center text-muted-foreground bg-card rounded-lg">
               <p>Enter a valid YouTube URL to start.</p>
             </div>
           )}
-        </div>
+        </Card>
     </div>
   );
 }

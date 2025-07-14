@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Button } from './ui/button';
 import { Play, Pause, RotateCcw, Coffee, BrainCircuit } from 'lucide-react';
 import { type PomodoroSettings } from './SettingsDialog';
+import { Card, CardContent } from './ui/card';
 
 interface PomodoroTimerProps {
   settings: PomodoroSettings;
@@ -92,36 +93,38 @@ export function PomodoroTimer({ settings, onSessionComplete, isTaskActive }: Pom
   }
 
   return (
-    <div className="flex flex-col items-center gap-4 p-4 rounded-lg bg-black/20 backdrop-blur-md border border-white/10">
-      <div className="flex gap-2">
-        <Button 
-          variant={sessionType === 'work' ? 'secondary' : 'ghost'} 
-          onClick={() => switchSession('work')}
-          size="sm"
-        >
-          Pomodoro
-        </Button>
-        <Button 
-          variant={sessionType === 'shortBreak' ? 'secondary' : 'ghost'} 
-          onClick={() => switchSession('shortBreak')}
-          size="sm"
-        >
-          Break
-        </Button>
-      </div>
-      <SessionIndicator />
-      <div className="font-headline font-bold text-7xl md:text-8xl text-primary tabular-nums">
-        {formatTime(time)}
-      </div>
-      <div className="flex gap-4">
-        <Button onClick={toggleTimer} size="lg" className="w-32">
-          {isActive ? <Pause className="mr-2" /> : <Play className="mr-2" />}
-          {isActive ? 'Pause' : 'Start'}
-        </Button>
-        <Button onClick={resetTimer} variant="outline" size="icon" aria-label="Reset timer">
-          <RotateCcw />
-        </Button>
-      </div>
-    </div>
+    <Card>
+      <CardContent className="flex flex-col items-center gap-4 p-6">
+        <div className="flex gap-2">
+          <Button 
+            variant={sessionType === 'work' ? 'secondary' : 'ghost'} 
+            onClick={() => switchSession('work')}
+            size="sm"
+          >
+            Pomodoro
+          </Button>
+          <Button 
+            variant={sessionType === 'shortBreak' ? 'secondary' : 'ghost'} 
+            onClick={() => switchSession('shortBreak')}
+            size="sm"
+          >
+            Break
+          </Button>
+        </div>
+        <SessionIndicator />
+        <div className="font-bold text-8xl text-primary tabular-nums">
+          {formatTime(time)}
+        </div>
+        <div className="flex gap-4">
+          <Button onClick={toggleTimer} size="lg" className="w-32">
+            {isActive ? <Pause className="mr-2" /> : <Play className="mr-2" />}
+            {isActive ? 'Pause' : 'Start'}
+          </Button>
+          <Button onClick={resetTimer} variant="outline" size="icon" aria-label="Reset timer">
+            <RotateCcw />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
