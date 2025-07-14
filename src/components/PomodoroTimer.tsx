@@ -3,11 +3,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Button } from './ui/button';
 import { Play, Pause, RotateCcw, Coffee, BrainCircuit } from 'lucide-react';
-import { type PomodoroSettings } from './SettingsDialog';
+import { SettingsDialog, type PomodoroSettings } from './SettingsDialog';
 import { Card, CardContent } from './ui/card';
 
 interface PomodoroTimerProps {
   settings: PomodoroSettings;
+  onSettingsChange: (newSettings: PomodoroSettings) => void;
   onSessionComplete: () => void;
   onTimerStart: () => void;
   onTimerPause: () => void;
@@ -16,7 +17,7 @@ interface PomodoroTimerProps {
 
 type SessionType = 'work' | 'shortBreak';
 
-export function PomodoroTimer({ settings, onSessionComplete, onTimerStart, onTimerPause, onTimerStateChange }: PomodoroTimerProps) {
+export function PomodoroTimer({ settings, onSettingsChange, onSessionComplete, onTimerStart, onTimerPause, onTimerStateChange }: PomodoroTimerProps) {
   const [sessionType, setSessionType] = useState<SessionType>('work');
   const [time, setTime] = useState(settings.work * 60);
   const [isActive, setIsActive] = useState(false);
@@ -110,8 +111,11 @@ export function PomodoroTimer({ settings, onSessionComplete, onTimerStart, onTim
   }
 
   return (
-    <Card>
-      <CardContent className="flex flex-col items-center gap-4 p-6">
+    <Card className="relative">
+      <div className="absolute top-2 right-2">
+        <SettingsDialog settings={settings} onSave={onSettingsChange} />
+      </div>
+      <CardContent className="flex flex-col items-center gap-4 p-6 pt-12">
         <div className="flex gap-2">
           <Button 
             variant={sessionType === 'work' ? 'secondary' : 'ghost'} 

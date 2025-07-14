@@ -4,7 +4,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import type { Task } from '@/lib/types';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { ThemeToggle } from './ThemeToggle';
-import { SettingsDialog, type PomodoroSettings } from './SettingsDialog';
+import { type PomodoroSettings } from './SettingsDialog';
 import { PomodoroTimer } from './PomodoroTimer';
 import { TaskList } from './TaskList';
 import { YouTubePlayer } from './YouTubePlayer';
@@ -188,7 +188,6 @@ export default function FocusFlowApp() {
           </Button>
         </form>
         <div className="flex items-center gap-2">
-          <SettingsDialog settings={settings} onSave={setSettings} />
           <ThemeToggle />
         </div>
       </header>
@@ -211,6 +210,7 @@ export default function FocusFlowApp() {
         >
           <PomodoroTimer 
             settings={settings} 
+            onSettingsChange={setSettings}
             onSessionComplete={handleSessionComplete}
             onTimerStart={handleTimerStart}
             onTimerPause={handleTimerPause}
