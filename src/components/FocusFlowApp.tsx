@@ -8,6 +8,9 @@ import { SettingsDialog, type PomodoroSettings } from './SettingsDialog';
 import { PomodoroTimer } from './PomodoroTimer';
 import { TaskList } from './TaskList';
 import { YouTubePlayer } from './YouTubePlayer';
+import { Input } from './ui/input';
+import { Button } from './ui/button';
+import { Play } from 'lucide-react';
 
 const MIN_PANEL_WIDTH = 350;
 const MAX_PANEL_WIDTH = 800;
@@ -19,6 +22,14 @@ export default function FocusFlowApp() {
   const [youtubeUrl, setYoutubeUrl] = useLocalStorage<string>('youtubeUrl', 'https://www.youtube.com/watch?v=-Xh4BNbxpI8');
   const [panelWidth, setPanelWidth] = useLocalStorage<number>('panelWidth', 480);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+  const [inputValue, setInputValue] = useState(youtubeUrl);
+
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setYoutubeUrl(inputValue);
+  };
+
 
   const isResizing = useRef(false);
 
@@ -123,6 +134,16 @@ export default function FocusFlowApp() {
     <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden">
       <header className="flex items-center justify-between p-2 px-4 border-b shrink-0">
         <h1 className="text-xl font-bold text-primary">FocusFlow</h1>
+        <form onSubmit={handleSubmit} className="flex gap-2 w-full max-w-lg mx-auto">
+          <Input
+            value={youtubeUrl}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder="Enter YouTube video or playlist URL"
+          />
+          <Button type="submit">
+            <Play className="mr-2 h-4 w-4" /> Load
+          </Button>
+        </form>
         <div className="flex items-center gap-2">
           <SettingsDialog settings={settings} onSave={setSettings} />
           <ThemeToggle />

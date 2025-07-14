@@ -1,9 +1,6 @@
 "use client";
 
 import { useState, useMemo } from 'react';
-import { Input } from './ui/input';
-import { Button } from './ui/button';
-import { Play } from 'lucide-react';
 import { Card } from './ui/card';
 
 interface YouTubePlayerProps {
@@ -55,23 +52,8 @@ export function YouTubePlayer({ initialUrl, onUrlChange }: YouTubePlayerProps) {
     return '';
   }, [initialUrl]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onUrlChange(inputValue);
-  };
-
   return (
     <div className="h-full w-full flex flex-col gap-4">
-        <form onSubmit={handleSubmit} className="flex gap-2 w-full max-w-lg mx-auto">
-          <Input
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Enter YouTube video or playlist URL"
-          />
-          <Button type="submit">
-            <Play className="mr-2 h-4 w-4" /> Load
-          </Button>
-        </form>
         <Card className="w-full flex-grow aspect-video">
           {embedUrl ? (
             <iframe
@@ -79,7 +61,6 @@ export function YouTubePlayer({ initialUrl, onUrlChange }: YouTubePlayerProps) {
               className="w-full h-full rounded-lg"
               src={embedUrl}
               title="YouTube video player"
-              frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
             ></iframe>
