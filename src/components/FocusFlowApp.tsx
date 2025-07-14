@@ -204,7 +204,6 @@ export default function FocusFlowApp() {
           <PomodoroTimer 
             settings={settings} 
             onSessionComplete={handleSessionComplete}
-            isTaskActive={!!activeTaskId}
             onTimerStart={handleTimerStart}
             onTimerStateChange={setIsTimerActive}
           />

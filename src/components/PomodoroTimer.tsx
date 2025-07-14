@@ -9,14 +9,13 @@ import { Card, CardContent } from './ui/card';
 interface PomodoroTimerProps {
   settings: PomodoroSettings;
   onSessionComplete: () => void;
-  isTaskActive: boolean;
   onTimerStart: () => void;
   onTimerStateChange: (isActive: boolean) => void;
 }
 
 type SessionType = 'work' | 'shortBreak';
 
-export function PomodoroTimer({ settings, onSessionComplete, isTaskActive, onTimerStart, onTimerStateChange }: PomodoroTimerProps) {
+export function PomodoroTimer({ settings, onSessionComplete, onTimerStart, onTimerStateChange }: PomodoroTimerProps) {
   const [sessionType, setSessionType] = useState<SessionType>('work');
   const [time, setTime] = useState(settings.work * 60);
   const [isActive, setIsActive] = useState(false);
@@ -125,7 +124,7 @@ export function PomodoroTimer({ settings, onSessionComplete, isTaskActive, onTim
           {formatTime(time)}
         </div>
         <div className="flex gap-4">
-          <Button onClick={toggleTimer} size="lg" className="w-32" disabled={!isTaskActive}>
+          <Button onClick={toggleTimer} size="lg" className="w-32">
             {isActive ? <Pause className="mr-2" /> : <Play className="mr-2" />}
             {isActive ? 'Pause' : 'Start'}
           </Button>
@@ -133,7 +132,6 @@ export function PomodoroTimer({ settings, onSessionComplete, isTaskActive, onTim
             <RotateCcw />
           </Button>
         </div>
-        {!isTaskActive && <p className="text-xs text-muted-foreground">Select a task to start the timer.</p>}
       </CardContent>
     </Card>
   );
