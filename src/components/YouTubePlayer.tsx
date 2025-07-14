@@ -9,6 +9,7 @@ interface YouTubePlayerProps {
 
 export interface YouTubePlayerRef {
   playVideo: () => void;
+  pauseVideo: () => void;
 }
 
 function extractId(url: string): { videoId?: string; playlistId?: string } {
@@ -45,8 +46,13 @@ const YouTubePlayer = forwardRef<YouTubePlayerRef, YouTubePlayerProps>(({ initia
 
   useImperativeHandle(ref, () => ({
     playVideo: () => {
-      if (playerRef.current && playerRef.current.getPlayerState() !== 1) {
+      if (playerRef.current && playerRef.current.getPlayerState() !== 1) { // 1: playing
         playerRef.current.playVideo();
+      }
+    },
+    pauseVideo: () => {
+      if (playerRef.current && playerRef.current.getPlayerState() === 1) { // 1: playing
+        playerRef.current.pauseVideo();
       }
     },
   }));

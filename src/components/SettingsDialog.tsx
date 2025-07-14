@@ -17,17 +17,20 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
 
 const settingsSchema = z.object({
   work: z.coerce.number().min(1, "Must be at least 1 minute.").max(120),
   shortBreak: z.coerce.number().min(1, "Must be at least 1 minute.").max(60),
+  syncVideo: z.boolean().default(true),
 });
 
 export type PomodoroSettings = z.infer<typeof settingsSchema>;
@@ -88,6 +91,26 @@ export function SettingsDialog({ settings, onSave }: SettingsDialogProps) {
                     <Input type="number" {...field} />
                   </FormControl>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="syncVideo"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                  <div className="space-y-0.5">
+                    <FormLabel>Sync video with timer</FormLabel>
+                    <FormDescription>
+                      Play/pause the video when the timer starts/stops.
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
                 </FormItem>
               )}
             />

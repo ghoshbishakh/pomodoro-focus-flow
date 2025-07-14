@@ -20,7 +20,7 @@ const MAX_PANEL_WIDTH = 800;
 export default function FocusFlowApp() {
   const [tasks, setTasks] = useLocalStorage<Task[]>('tasks', []);
   const [activeTaskId, setActiveTaskId] = useLocalStorage<string | null>('activeTaskId', null);
-  const [settings, setSettings] = useLocalStorage<PomodoroSettings>('pomodoroSettings', { work: 25, shortBreak: 5 });
+  const [settings, setSettings] = useLocalStorage<PomodoroSettings>('pomodoroSettings', { work: 25, shortBreak: 5, syncVideo: true });
   const [youtubeUrl, setYoutubeUrl] = useLocalStorage<string>('youtubeUrl', 'https://www.youtube.com/watch?v=-Xh4BNbxpI8');
   const [panelWidth, setPanelWidth] = useLocalStorage<number>('panelWidth', 480);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
@@ -33,7 +33,15 @@ export default function FocusFlowApp() {
   const playerRef = useRef<YouTubePlayerRef>(null);
 
   const handleTimerStart = () => {
-    playerRef.current?.playVideo();
+    if (settings.syncVideo) {
+      playerRef.current?.playVideo();
+    }
+  };
+
+  const handleTimerPause = () => {
+    if (settings.syncVideo) {
+      playerRef.current?.pauseVideo();
+    }
   };
   
   const handleToggleHeader = () => {
@@ -205,6 +213,7 @@ export default function FocusFlowApp() {
             settings={settings} 
             onSessionComplete={handleSessionComplete}
             onTimerStart={handleTimerStart}
+            onTimerPause={handleTimerPause}
             onTimerStateChange={setIsTimerActive}
           />
           <TaskList

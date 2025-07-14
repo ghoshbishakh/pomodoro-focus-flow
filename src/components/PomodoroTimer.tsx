@@ -10,12 +10,13 @@ interface PomodoroTimerProps {
   settings: PomodoroSettings;
   onSessionComplete: () => void;
   onTimerStart: () => void;
+  onTimerPause: () => void;
   onTimerStateChange: (isActive: boolean) => void;
 }
 
 type SessionType = 'work' | 'shortBreak';
 
-export function PomodoroTimer({ settings, onSessionComplete, onTimerStart, onTimerStateChange }: PomodoroTimerProps) {
+export function PomodoroTimer({ settings, onSessionComplete, onTimerStart, onTimerPause, onTimerStateChange }: PomodoroTimerProps) {
   const [sessionType, setSessionType] = useState<SessionType>('work');
   const [time, setTime] = useState(settings.work * 60);
   const [isActive, setIsActive] = useState(false);
@@ -34,7 +35,10 @@ export function PomodoroTimer({ settings, onSessionComplete, onTimerStart, onTim
     setSessionType(type);
     setIsActive(autoStart);
     setTime(type === 'work' ? settings.work * 60 : settings.shortBreak * 60);
-  }, [settings]);
+    if (autoStart) {
+      onTimerStart();
+    }
+  }, [settings, onTimerStart]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -67,14 +71,19 @@ export function PomodoroTimer({ settings, onSessionComplete, onTimerStart, onTim
   const toggleTimer = () => {
     if (!isActive) {
       onTimerStart();
+    } else {
+      onTimerPause();
     }
     setIsActive(!isActive);
   };
 
   const resetTimer = useCallback(() => {
+    if (isActive) {
+      onTimerPause();
+    }
     setIsActive(false);
     setTime(sessionType === 'work' ? settings.work * 60 : settings.shortBreak * 60);
-  }, [sessionType, settings]);
+  }, [sessionType, settings, isActive, onTimerPause]);
 
 
   const formatTime = (seconds: number) => {
