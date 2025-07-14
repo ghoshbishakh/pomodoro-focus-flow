@@ -2,7 +2,9 @@
 
 Welcome to **FocusFlow**! This isn't just another Pomodoro app; it's a fully-featured productivity environment designed to keep you in the zone and on task. Combine the power of time management with your favorite ambient sounds or music from YouTube, all in one sleek, customizable interface.
 
-![FocusFlow App Screenshot](https://placehold.co/800x450.png?text=FocusFlow+Screenshot)
+![ezgif-550a174b6e9a9b](https://github.com/user-attachments/assets/c0ea67fa-4dff-4a09-82cf-0cef209cdd50)
+<img width="1913" height="954" alt="Screenshot from 2025-07-15 01-08-46" src="https://github.com/user-attachments/assets/88053db3-83f9-450b-8b5d-ddc52f018ba9" />
+
 
 ---
 
