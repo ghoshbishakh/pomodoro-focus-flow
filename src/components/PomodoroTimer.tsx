@@ -57,10 +57,6 @@ export function PomodoroTimer({ settings, onSessionComplete, isTaskActive }: Pom
   }, []);
 
   const toggleTimer = () => {
-    if (!isTaskActive && sessionType === 'work' && !isActive) {
-      alert("Please select a task to track before starting the timer.");
-      return;
-    }
     setIsActive(!isActive);
   };
 
@@ -83,22 +79,24 @@ export function PomodoroTimer({ settings, onSessionComplete, isTaskActive }: Pom
   };
 
   return (
-    <div className="flex flex-col items-center gap-6 p-6 rounded-lg bg-card text-card-foreground shadow-md">
+    <div className="flex flex-col items-center gap-4 p-4 rounded-lg bg-card/10 backdrop-blur-sm border border-white/10">
       <div className="flex gap-2">
         <Button 
           variant={sessionType === 'work' ? 'secondary' : 'ghost'} 
           onClick={() => switchSession('work')}
+          size="sm"
         >
           Pomodoro
         </Button>
         <Button 
           variant={sessionType === 'shortBreak' ? 'secondary' : 'ghost'} 
           onClick={() => switchSession('shortBreak')}
+          size="sm"
         >
           Break
         </Button>
       </div>
-      <div className="font-headline font-bold text-8xl text-primary tabular-nums">
+      <div className="font-headline font-bold text-7xl md:text-8xl text-primary tabular-nums">
         {formatTime(time)}
       </div>
       <div className="flex gap-4">

@@ -8,7 +8,6 @@ import { SettingsDialog, type PomodoroSettings } from './SettingsDialog';
 import { PomodoroTimer } from './PomodoroTimer';
 import { TaskList } from './TaskList';
 import { YouTubePlayer } from './YouTubePlayer';
-import { VideoSuggestions } from './VideoSuggestions';
 import { Separator } from './ui/separator';
 
 const MIN_PANEL_WIDTH = 350;
@@ -20,8 +19,25 @@ export default function FocusFlowApp() {
   const [settings, setSettings] = useLocalStorage<PomodoroSettings>('pomodoroSettings', { work: 25, shortBreak: 5 });
   const [youtubeUrl, setYoutubeUrl] = useLocalStorage<string>('youtubeUrl', 'https://www.youtube.com/watch?v=jfKfPfyJRdk');
   const [panelWidth, setPanelWidth] = useLocalStorage<number>('panelWidth', 480);
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
 
   const isResizing = useRef(false);
+
+  // Initialize AudioContext on user interaction
+  useEffect(() => {
+    const initAudio = () => {
+        if (!audioContext) {
+            const context = new (window.AudioContext || (window as any).webkitAudioContext)();
+            setAudioContext(context);
+        }
+        document.removeEventListener('click', initAudio);
+    };
+    document.addEventListener('click', initAudio);
+    return () => {
+        document.removeEventListener('click', initAudio);
+    };
+  }, [audioContext]);
+
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -69,8 +85,28 @@ export default function FocusFlowApp() {
   const handleDeleteTask = (id: string) => {
     setTasks(tasks.filter(task => task.id !== id));
   };
+  
+  const handleRearrangeTasks = (newTasks: Task[]) => {
+    setTasks(newTasks);
+  };
+
+  const playSound = () => {
+    if (!audioContext) return;
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // A4
+    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime); // Subtle volume
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.5);
+  };
 
   const handleSessionComplete = () => {
+    playSound();
     if (activeTaskId) {
       setTasks(tasks.map(task =>
         task.id === activeTaskId
@@ -82,7 +118,7 @@ export default function FocusFlowApp() {
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden">
-      <header className="flex items-center justify-between p-2 px-4 border-b shrink-0">
+      <header className="flex items-center justify-between p-2 px-4 border-b shrink-0 bg-background/50 backdrop-blur-sm">
         <h1 className="text-xl font-bold font-headline text-primary">FocusFlow</h1>
         <div className="flex items-center gap-2">
           <SettingsDialog settings={settings} onSave={setSettings} />
@@ -90,7 +126,7 @@ export default function FocusFlowApp() {
         </div>
       </header>
       <main className="flex flex-grow min-h-0">
-        <div style={{ width: `${panelWidth}px` }} className="p-4 flex flex-col overflow-y-auto">
+        <div style={{ width: `${panelWidth}px` }} className="p-2 flex flex-col overflow-y-auto bg-background/50 backdrop-blur-sm">
           <PomodoroTimer 
             settings={settings} 
             onSessionComplete={handleSessionComplete}
@@ -101,19 +137,19 @@ export default function FocusFlowApp() {
             onAddTask={handleAddTask}
             onToggleTask={handleToggleTask}
             onDeleteTask={handleDeleteTask}
+            onRearrangeTasks={handleRearrangeTasks}
             activeTaskId={activeTaskId}
             onSetActiveTaskId={setActiveTaskId}
           />
-          <VideoSuggestions tasks={tasks} onSuggestionClick={setYoutubeUrl} />
         </div>
         
         <Separator
           orientation="vertical"
           onMouseDown={handleMouseDown}
-          className="w-2 cursor-col-resize hover:bg-primary transition-colors"
+          className="w-1 cursor-col-resize hover:bg-primary transition-colors"
         />
 
-        <div className="flex-grow p-4 overflow-y-auto">
+        <div className="flex-grow flex items-center justify-center">
           <YouTubePlayer initialUrl={youtubeUrl} onUrlChange={setYoutubeUrl} />
         </div>
       </main>

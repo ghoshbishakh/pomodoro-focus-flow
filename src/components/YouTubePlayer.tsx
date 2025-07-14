@@ -3,7 +3,6 @@
 import { useState, useMemo } from 'react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Play } from 'lucide-react';
 
 interface YouTubePlayerProps {
@@ -43,22 +42,19 @@ export function YouTubePlayer({ initialUrl, onUrlChange }: YouTubePlayerProps) {
   };
 
   return (
-    <Card className="h-full flex flex-col">
-      <CardHeader>
-        <CardTitle>YouTube Player</CardTitle>
-      </CardHeader>
-      <CardContent className="flex-grow flex flex-col gap-4">
+    <div className="h-full w-full flex flex-col gap-2 p-2">
         <form onSubmit={handleSubmit} className="flex gap-2">
           <Input
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="Enter YouTube video or playlist URL"
+            className="bg-background/50"
           />
           <Button type="submit">
             <Play className="mr-2 h-4 w-4" /> Load
           </Button>
         </form>
-        <div className="flex-grow w-full bg-card-foreground/10 rounded-lg overflow-hidden aspect-video">
+        <div className="flex-grow w-full rounded-lg overflow-hidden aspect-video">
           {embedUrl ? (
             <iframe
               className="w-full h-full"
@@ -69,12 +65,11 @@ export function YouTubePlayer({ initialUrl, onUrlChange }: YouTubePlayerProps) {
               allowFullScreen
             ></iframe>
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+            <div className="w-full h-full flex items-center justify-center text-muted-foreground bg-black/20 rounded-lg">
               <p>Enter a valid YouTube URL to start.</p>
             </div>
           )}
         </div>
-      </CardContent>
-    </Card>
+    </div>
   );
 }
