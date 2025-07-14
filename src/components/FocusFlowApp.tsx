@@ -13,6 +13,7 @@ import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { Play, Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Logo } from './Logo';
 
 const MIN_PANEL_WIDTH = 350;
 const MAX_PANEL_WIDTH = 800;
@@ -176,7 +177,10 @@ export default function FocusFlowApp() {
         "flex items-center justify-between p-2 px-4 border-b shrink-0 transition-transform duration-300",
         !isHeaderVisible && "-translate-y-full absolute top-0 w-full"
       )}>
-        <h1 className="text-xl font-bold text-primary">FocusFlow</h1>
+        <div className="flex items-center gap-2">
+          <Logo className="h-6 w-6" />
+          <h1 className="text-xl font-bold text-primary">FocusFlow</h1>
+        </div>
         <form onSubmit={handleSubmit} className="flex gap-2 w-full max-w-lg mx-auto">
           <Input
             value={inputValue}
