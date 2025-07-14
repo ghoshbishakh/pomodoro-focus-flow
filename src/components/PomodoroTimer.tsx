@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Button } from './ui/button';
-import { Play, Pause, RotateCcw } from 'lucide-react';
+import { Play, Pause, RotateCcw, Coffee, BrainCircuit } from 'lucide-react';
 import { type PomodoroSettings } from './SettingsDialog';
 
 interface PomodoroTimerProps {
@@ -19,10 +19,15 @@ export function PomodoroTimer({ settings, onSessionComplete, isTaskActive }: Pom
   const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
-    // Reset timer when settings change
     setIsActive(false);
     setSessionType('work');
     setTime(settings.work * 60);
+  }, [settings]);
+
+  const switchSession = useCallback((type: SessionType, autoStart = false) => {
+    setSessionType(type);
+    setIsActive(autoStart);
+    setTime(type === 'work' ? settings.work * 60 : settings.shortBreak * 60);
   }, [settings]);
 
   useEffect(() => {
@@ -34,21 +39,18 @@ export function PomodoroTimer({ settings, onSessionComplete, isTaskActive }: Pom
     } else if (isActive && time === 0) {
       if (sessionType === 'work') {
         onSessionComplete();
-        setSessionType('shortBreak');
-        setTime(settings.shortBreak * 60);
         new Notification('FocusFlow', { body: "Work session complete! Time for a break." });
+        switchSession('shortBreak', true); // auto start break
       } else {
-        setSessionType('work');
-        setTime(settings.work * 60);
         new Notification('FocusFlow', { body: "Break's over! Let's get back to work." });
+        switchSession('work', false);
       }
-      setIsActive(false);
     }
 
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isActive, time, onSessionComplete, sessionType, settings]);
+  }, [isActive, time, onSessionComplete, sessionType, settings, switchSession]);
   
   useEffect(() => {
     if (typeof window !== "undefined" && "Notification" in window && Notification.permission !== "granted") {
@@ -62,24 +64,35 @@ export function PomodoroTimer({ settings, onSessionComplete, isTaskActive }: Pom
 
   const resetTimer = useCallback(() => {
     setIsActive(false);
-    const newTime = sessionType === 'work' ? settings.work * 60 : settings.shortBreak * 60;
-    setTime(newTime);
+    setTime(sessionType === 'work' ? settings.work * 60 : settings.shortBreak * 60);
   }, [sessionType, settings]);
 
-  const switchSession = (type: SessionType) => {
-    setSessionType(type);
-    setIsActive(false);
-    setTime(type === 'work' ? settings.work * 60 : settings.shortBreak * 60);
-  };
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
+  
+  const SessionIndicator = () => {
+      if (sessionType === 'work') {
+          return (
+            <div className="flex items-center gap-2 text-primary">
+              <BrainCircuit className="h-5 w-5" />
+              <span className="font-semibold">Focus Time</span>
+            </div>
+          )
+      }
+      return (
+        <div className="flex items-center gap-2 text-primary">
+          <Coffee className="h-5 w-5" />
+          <span className="font-semibold">Break Time</span>
+        </div>
+      );
+  }
 
   return (
-    <div className="flex flex-col items-center gap-4 p-4 rounded-lg bg-card/10 backdrop-blur-sm border border-white/10">
+    <div className="flex flex-col items-center gap-4 p-4 rounded-lg bg-black/20 backdrop-blur-md border border-white/10">
       <div className="flex gap-2">
         <Button 
           variant={sessionType === 'work' ? 'secondary' : 'ghost'} 
@@ -96,6 +109,7 @@ export function PomodoroTimer({ settings, onSessionComplete, isTaskActive }: Pom
           Break
         </Button>
       </div>
+      <SessionIndicator />
       <div className="font-headline font-bold text-7xl md:text-8xl text-primary tabular-nums">
         {formatTime(time)}
       </div>

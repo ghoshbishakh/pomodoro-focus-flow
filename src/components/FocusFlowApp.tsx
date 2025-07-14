@@ -17,7 +17,7 @@ export default function FocusFlowApp() {
   const [tasks, setTasks] = useLocalStorage<Task[]>('tasks', []);
   const [activeTaskId, setActiveTaskId] = useLocalStorage<string | null>('activeTaskId', null);
   const [settings, setSettings] = useLocalStorage<PomodoroSettings>('pomodoroSettings', { work: 25, shortBreak: 5 });
-  const [youtubeUrl, setYoutubeUrl] = useLocalStorage<string>('youtubeUrl', 'https://www.youtube.com/watch?v=jfKfPfyJRdk');
+  const [youtubeUrl, setYoutubeUrl] = useLocalStorage<string>('youtubeUrl', 'https://www.youtube.com/watch?v=-Xh4BNbxpI8');
   const [panelWidth, setPanelWidth] = useLocalStorage<number>('panelWidth', 480);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
 
@@ -27,8 +27,12 @@ export default function FocusFlowApp() {
   useEffect(() => {
     const initAudio = () => {
         if (!audioContext) {
-            const context = new (window.AudioContext || (window as any).webkitAudioContext)();
-            setAudioContext(context);
+            try {
+              const context = new (window.AudioContext || (window as any).webkitAudioContext)();
+              setAudioContext(context);
+            } catch(e) {
+                console.error("Web Audio API is not supported in this browser", e);
+            }
         }
         document.removeEventListener('click', initAudio);
     };
@@ -125,8 +129,12 @@ export default function FocusFlowApp() {
           <ThemeToggle />
         </div>
       </header>
-      <main className="flex flex-grow min-h-0">
-        <div style={{ width: `${panelWidth}px` }} className="p-2 flex flex-col overflow-y-auto bg-background/50 backdrop-blur-sm">
+      <main className="flex flex-grow min-h-0 relative">
+        <div className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat" style={{backgroundImage: 'radial-gradient(circle at center, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 100%)'}}></div>
+        <div 
+          style={{ width: `${panelWidth}px` }} 
+          className="p-2 flex flex-col overflow-y-auto bg-black/10 backdrop-blur-xl border-r border-white/10 z-10"
+        >
           <PomodoroTimer 
             settings={settings} 
             onSessionComplete={handleSessionComplete}
@@ -146,10 +154,11 @@ export default function FocusFlowApp() {
         <Separator
           orientation="vertical"
           onMouseDown={handleMouseDown}
-          className="w-1 cursor-col-resize hover:bg-primary transition-colors"
+          className="w-1 cursor-col-resize hover:bg-primary transition-colors z-10"
         />
 
-        <div className="flex-grow flex items-center justify-center">
+        <div className="flex-grow flex items-center justify-center relative z-0">
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-black/80 pointer-events-none"></div>
           <YouTubePlayer initialUrl={youtubeUrl} onUrlChange={setYoutubeUrl} />
         </div>
       </main>

@@ -65,6 +65,7 @@ export function TaskList({ tasks, onAddTask, onToggleTask, onDeleteTask, onRearr
             value={newTaskText}
             onChange={(e) => setNewTaskText(e.target.value)}
             placeholder="Add a new task..."
+            className="bg-white/5"
           />
           <Button type="submit" size="icon" aria-label="Add task">
             <Plus />
@@ -84,8 +85,8 @@ export function TaskList({ tasks, onAddTask, onToggleTask, onDeleteTask, onRearr
                 onDragEnd={handleDragEnd}
                 onDragOver={(e) => e.preventDefault()}
                 className={cn(
-                  "flex items-center gap-1 p-1 rounded-md transition-colors cursor-grab active:cursor-grabbing",
-                  activeTaskId === task.id ? 'bg-primary/20' : 'hover:bg-muted/50',
+                  "flex items-center gap-1 p-1 rounded-md transition-all cursor-grab active:cursor-grabbing",
+                  activeTaskId === task.id ? 'bg-primary/20' : 'hover:bg-white/10',
                 )}
               >
                 <GripVertical className="h-5 w-5 text-muted-foreground/50 shrink-0"/>
@@ -95,7 +96,7 @@ export function TaskList({ tasks, onAddTask, onToggleTask, onDeleteTask, onRearr
                   onCheckedChange={() => onToggleTask(task.id)}
                   aria-label={`Mark task ${task.text} as ${task.completed ? 'incomplete' : 'complete'}`}
                 />
-                <label htmlFor={`task-${task.id}`} className={cn("flex-grow", task.completed && "line-through text-muted-foreground")}>
+                <label htmlFor={`task-${task.id}`} className={cn("flex-grow truncate", task.completed && "line-through text-muted-foreground")}>
                   {task.text}
                 </label>
                  {task.pomodoros > 0 && <Badge variant="secondary">{task.pomodoros}</Badge>}
