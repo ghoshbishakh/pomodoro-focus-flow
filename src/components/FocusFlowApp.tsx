@@ -136,7 +136,7 @@ export default function FocusFlowApp() {
         <h1 className="text-xl font-bold text-primary">FocusFlow</h1>
         <form onSubmit={handleSubmit} className="flex gap-2 w-full max-w-lg mx-auto">
           <Input
-            value={youtubeUrl}
+            value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="Enter YouTube video or playlist URL"
           />
@@ -145,7 +145,6 @@ export default function FocusFlowApp() {
           </Button>
         </form>
         <div className="flex items-center gap-2">
-          <SettingsDialog settings={settings} onSave={setSettings} />
           <ThemeToggle />
         </div>
       </header>
@@ -158,6 +157,7 @@ export default function FocusFlowApp() {
             settings={settings} 
             onSessionComplete={handleSessionComplete}
             isTaskActive={!!activeTaskId} 
+            settingsComponent={<SettingsDialog settings={settings} onSave={setSettings} />}
           />
           <TaskList
             tasks={tasks}

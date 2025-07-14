@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, type ReactNode } from 'react';
 import { Button } from './ui/button';
 import { Play, Pause, RotateCcw, Coffee, BrainCircuit } from 'lucide-react';
 import { type PomodoroSettings } from './SettingsDialog';
@@ -10,11 +10,12 @@ interface PomodoroTimerProps {
   settings: PomodoroSettings;
   onSessionComplete: () => void;
   isTaskActive: boolean;
+  settingsComponent: ReactNode;
 }
 
 type SessionType = 'work' | 'shortBreak';
 
-export function PomodoroTimer({ settings, onSessionComplete, isTaskActive }: PomodoroTimerProps) {
+export function PomodoroTimer({ settings, onSessionComplete, isTaskActive, settingsComponent }: PomodoroTimerProps) {
   const [sessionType, setSessionType] = useState<SessionType>('work');
   const [time, setTime] = useState(settings.work * 60);
   const [isActive, setIsActive] = useState(false);
@@ -120,6 +121,7 @@ export function PomodoroTimer({ settings, onSessionComplete, isTaskActive }: Pom
             {isActive ? <Pause className="mr-2" /> : <Play className="mr-2" />}
             {isActive ? 'Pause' : 'Start'}
           </Button>
+          {settingsComponent}
           <Button onClick={resetTimer} variant="outline" size="icon" aria-label="Reset timer">
             <RotateCcw />
           </Button>
